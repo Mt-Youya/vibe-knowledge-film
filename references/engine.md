@@ -20,6 +20,8 @@ engine/
 
 ## 命令
 
+以下相对路径以 skill 根目录为基准；从用户项目运行时请用 skill 的绝对路径。首次配置和环境检查见 [setup.md](setup.md)。
+
 ```bash
 python scripts/new_film.py <工程目录> --world C|B     # 建工程：index.html + 一份没有画面的 film.js 骨架
 python engine/render.py <工程> --serve                  # 预览 http://127.0.0.1:8765/?play
@@ -28,7 +30,7 @@ python engine/render.py <工程> --sheet 16               # 全片均匀 16 帧�
 python engine/render.py <工程> --sheet 3.5 9 21.5       # 指定时刻拼一张
 python engine/render.py <工程> --motion 8.2 10.6        # 这段时间里均匀取 12 帧拼一张 → review/motion_8.2-10.6.jpg（看转场）
 python engine/render.py <工程> --clip 0 30 head         # 只渲 0–30s → renders/head.mp4
-python engine/render.py <工程> --det                    # 确定性自检
+python engine/render.py <工程> --det                    # 确定性自检；不一致时非零退出
 python engine/render.py <工程>                          # 全片 → renders/raw.mp4（无声）
 python engine/render.py <工程> --jobs 4                 # 全片，分 4 段并行渲再无损拼接
 python engine/render.py <工程> --events                 # 导出音效事件表 → audio/events.json
@@ -37,7 +39,7 @@ python engine/audio.py  <工程> --bgm 曲子.mp3 -8        # 垫现成配乐（
 ```
 
 渲染速度单路约每秒 3–6 帧（1080p，截 PNG），`--jobs 4` 大致快三倍。3 分钟的片子仍然要十几分钟——所以先看拼图，再渲片段，最后才渲全片。
-依赖：Python 的 `playwright`（用本机 Chrome）、`numpy`、`scipy`、`Pillow`，以及 `ffmpeg`。
+依赖：Python 3.10+ 的 `playwright`、`numpy`、`scipy`、`Pillow`，以及 `ffmpeg`。默认使用 Playwright Chromium，缺失时尝试本机 Chrome；可用 `VK_BROWSER_CHANNEL` 显式选择。渲染速度是原项目的经验值，实际以本机测量为准。
 
 ## film.js 的样子
 

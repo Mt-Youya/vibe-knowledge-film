@@ -15,7 +15,7 @@
 工程目录里只需要 index.html + film.js。引擎（vk.js、vk-kit.js、fonts/）留在本文件所在目录，
 由内置的小服务器挂到 /engine/ 下 —— 不用往每个工程里拷 40MB 字体，也没有 file:// 的跨目录字体限制。
 """
-import functools, hashlib, http.server, io, json, random, subprocess, sys, threading
+import functools, hashlib, http.server, io, json, os, random, subprocess, sys, threading
 from pathlib import Path
 
 ENGINE = Path(__file__).resolve().parent
@@ -39,9 +39,24 @@ def serve(proj, port=0):
     threading.Thread(target=srv.serve_forever, daemon=True).start()
     return srv, f"http://127.0.0.1:{srv.server_address[1]}/"
 
-def open_page(p, url):
+def launch_browser(p):
+    from playwright.sync_api import Error
     # 关掉 LCD 次像素抗锯齿（跳着 seek 字边不抖）；每帧等合成器跑完再截；固定 sRGB
-    b = p.chromium.launch(channel="chrome", args=["--disable-lcd-text", "--run-all-compositor-stages-before-draw", "--force-color-profile=srgb"])
+    options = {"args": ["--disable-lcd-text", "--run-all-compositor-stages-before-draw", "--force-color-profile=srgb"]}
+    channel = os.environ.get("VK_BROWSER_CHANNEL")
+    if channel:
+        return p.chromium.launch(channel=channel, **options)
+    try:
+        return p.chromium.launch(**options)
+    except Error as chromium_error:
+        try:
+            return p.chromium.launch(channel="chrome", **options)
+        except Error as chrome_error:
+            raise RuntimeError("浏览器启动失败；运行 python3 -m playwright install chromium，或设置 VK_BROWSER_CHANNEL。\n"
+                               f"Chromium: {chromium_error}\nChrome: {chrome_error}") from chrome_error
+
+def open_page(p, url):
+    b = launch_browser(p)
     pg = b.new_page(viewport={"width": 1920, "height": 1080}, device_scale_factor=1)
     pg.on("console", lambda m: m.type in ("error", "warning") and print("[page]", m.text))
     pg.on("pageerror", lambda e: print("[pageerror]", e))
@@ -96,7 +111,11 @@ def frames(proj, out, a=0.0, b=None):
         for i in range(n0, n1):
             ff.stdin.write(shot(pg, i / fps))
             if (i - n0) % 150 == 0: print(f"  {i - n0}/{n1 - n0}", flush=True)
-        ff.stdin.close(); ff.wait(); print("done", out, f"{bb - a:.2f}s")
+        ff.stdin.close()
+        code = ff.wait()
+        if code:
+            raise subprocess.CalledProcessError(code, ff.args)
+        print("done", out, f"{bb - a:.2f}s")
     with_page(proj, go)
 
 def frames_parallel(proj, out, jobs):
@@ -108,8 +127,11 @@ def frames_parallel(proj, out, jobs):
         name = f"_part{i:02d}"; parts.append(proj / f"renders/{name}.mp4")
         procs.append(subprocess.Popen([sys.executable, str(Path(__file__).resolve()), str(proj), "--clip", repr(cuts[i] / fps), repr(cuts[i + 1] / fps), name],
                                       stdout=subprocess.DEVNULL if i else None))
-    if any(p.wait() for p in procs): sys.exit("有一段渲染失败了，先单独跑 --clip 看报错")
-    lst = proj / "renders/_parts.txt"; lst.write_text("".join(f"file '{p.as_posix()}'\n" for p in parts), encoding="utf-8")
+    codes = [p.wait() for p in procs]
+    if any(codes): sys.exit("有一段渲染失败了，先单独跑 --clip 看报错")
+    lst = proj / "renders/_parts.txt"
+    # concat 文件与片段同目录，使用相对路径，工程名含引号也能工作。
+    lst.write_text("".join(f"file '{p.name}'\n" for p in parts), encoding="utf-8")
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "concat", "-safe", "0", "-i", str(lst), "-c", "copy", "-movflags", "+faststart", str(out)], check=True)
     for p in parts + [lst]: p.unlink()
     print("done", out, f"{end:.2f}s", f"({jobs} 路并行)")
@@ -129,7 +151,9 @@ def det(proj, n=12):
         order = ts[:]; r.shuffle(order)
         bad = [t for t in order if hashlib.md5(shot(pg, t)).hexdigest() != h1[t]]
         print("deterministic" if not bad else f"NOT deterministic at {bad} —— 有东西在跨帧存状态或用了 Math.random()")
-    with_page(proj, go)
+        return not bad
+    if not with_page(proj, go):
+        raise SystemExit(1)
 
 if __name__ == "__main__":
     a = sys.argv[1:]

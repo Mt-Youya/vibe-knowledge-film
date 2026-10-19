@@ -1,0 +1,4 @@
+interface:
+  display_name: "Vibe 知识短片"
+  short_description: "把选题或文案做成无旁白知识动画，交付事实表、分镜、可编辑工程与视频"
+  default_prompt: "使用 $vibe-knowledge-film，把我的选题做成由字幕驱动的知识短片，并交付分镜、代码和视频。"

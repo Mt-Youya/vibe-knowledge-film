@@ -6,7 +6,7 @@ C 夜曲（抽象概念、看不见的机制）· B 寓言（心理和行为机�
 工程里是 index.html 和一份只能跑起来的 film.js 骨架——里面一行画面都没有。
 文案不同，屏上的东西就不同，代码也不同：每一镜照 storyboard.md 现写，不要从别的片子里搬画面。
 引擎留在 skill 目录里，由 engine/render.py 挂载。"""
-import shutil, sys
+import argparse, shutil
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -44,19 +44,25 @@ VK.film({{
 """
 
 if __name__ == "__main__":
-    a = sys.argv[1:]
-    if len(a) < 1 or a[0].startswith("-"): sys.exit(__doc__)
-    proj = Path(a[0]).resolve(); world = (a[a.index("--world") + 1] if "--world" in a else "C").upper()
-    if world not in WORLD: sys.exit("--world 只能是 C 或 B")
-    proj.mkdir(parents=True, exist_ok=True)
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("project", type=Path, help="用户项目中的输出目录")
+    parser.add_argument("--world", type=str.upper, choices=WORLD, default="C")
+    parser.add_argument("--force", action="store_true", help="覆盖已有 film.js 和 index.html")
+    args = parser.parse_args()
+    proj = args.project.resolve(); world = args.world
+    if proj == ROOT or ROOT in proj.parents:
+        parser.error("工程必须建在 skill 目录之外")
     film = proj / "film.js"
-    if film.exists() and "--force" not in a: sys.exit(f"{film} 已经存在。要覆盖加 --force")
+    existing = [p.name for p in (film, proj / "index.html") if p.exists()]
+    if existing and not args.force:
+        parser.error(f"已有 {', '.join(existing)}；直接编辑，或用 --force 明确覆盖")
+    proj.mkdir(parents=True, exist_ok=True)
     name, theme, subs, pal, standing = WORLD[world]
     shutil.copy(ROOT / "engine/index.html", proj / "index.html")
     film.write_text(SKELETON.format(name=name, theme=theme, subs=subs, pal=pal, standing=standing, en=", en: '……'" if world == "C" else ""), encoding="utf-8", newline="\n")
     render = ROOT / "engine/render.py"
     print(f"建好了：{proj}（{name}）\n"
-          f"  预览  python \"{render}\" \"{proj}\" --serve\n"
-          f"  拼图  python \"{render}\" \"{proj}\" --sheet 16\n"
-          f"  渲染  python \"{render}\" \"{proj}\"\n"
+          f"  预览  python3 \"{render}\" \"{proj}\" --serve\n"
+          f"  拼图  python3 \"{render}\" \"{proj}\" --sheet 16\n"
+          f"  渲染  python3 \"{render}\" \"{proj}\"\n"
           f"下一步：film.js 里现在一行画面都没有。照 storyboard.md，从最难画的那一镜写起。")

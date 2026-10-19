@@ -6,3 +6,7 @@ __pycache__/
 *.pyc
 *.mp4
 *.wav
+.venv/
+.agents/
+.claude/
+skills-lock.json
