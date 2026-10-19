@@ -77,13 +77,13 @@ python3 "$SKILL_ROOT/engine/render.py" "$PROJECT" --serve
 
 **C 夜曲：《折叠》**
 
-![蛋白质折叠样片](examples/fold_C.gif)
+![蛋白质折叠样片](https://raw.githubusercontent.com/HeyChengC/vibe-knowledge-film/62d51508aad00003dc6209afa80c4b5dc540de59/examples/fold_C.gif)
 
 **B 寓言：《鸽子的迷信》**
 
-![鸽子的迷信样片](examples/pigeon_B.gif)
+![鸽子的迷信样片](https://raw.githubusercontent.com/HeyChengC/vibe-knowledge-film/62d51508aad00003dc6209afa80c4b5dc540de59/examples/pigeon_B.gif)
 
-工程和说明见 [examples](examples/README.md)。
+工程和说明见 [examples](examples/README.md)。演示 GIF 引用原仓库的固定版本，不随 skill 安装；示例源码与静态截图保留在本仓库中。
 
 ## 项目结构与验证
 
