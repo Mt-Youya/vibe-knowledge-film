@@ -1,11 +1,21 @@
 ---
 name: vibe-knowledge-film
 description: >-
-  Create subtitle-led educational films with original Canvas animation, storyboards,
-  deterministic frame rendering, and synthesized audio. Use for Vibe 知识大赏、无旁白科普短片、
-  字幕驱动的知识动画，或把选题/文案做成代码生成的视频；也可修改已有此类工程。
-  Defaults to 16:9 horizontal video. Not intended for talking-head or voiceover production.
-license: SEE LICENSE
+  Create subtitle-led educational films with original Canvas animation: fact sheet,
+  storyboard, editable film.js project, deterministic frame rendering, and synthesized
+  audio rendered to MP4. Use when the user wants a no-voiceover explainer, Vibe 知识大赏、
+  无旁白科普短片、字幕驱动的知识动画，or wants a topic/script turned into a code-generated
+  video, storyboard or animated segment; also for editing existing projects of this kind.
+  Defaults to 16:9 1920×1080. Not for talking-head, voiceover, or stock-footage editing.
+license: MIT (reference-film materials excluded; see LICENSE)
+compatibility: >-
+  Writing scripts and storyboards needs no setup. Rendering needs Python 3.10+, the pip
+  packages in requirements.txt, Playwright Chromium (or local Chrome), ffmpeg/ffprobe,
+  and fonts fetched by engine/get_fonts.py; first setup requires network access.
+metadata:
+  author: Mt-Youya
+  version: "1.1"
+  upstream: HeyChengC/vibe-knowledge-film
 ---
 
 # Vibe 知识短片
