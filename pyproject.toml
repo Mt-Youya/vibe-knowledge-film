@@ -1,0 +1,27 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "vibe-knowledge-film"
+version = "1.1"
+description = "Render subtitle-led educational films from Canvas animation to MP4."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "HeyChengC" }, { name = "Mt-Youya" }]
+dependencies = [
+    "playwright",
+    "numpy",
+    "scipy",
+    "Pillow",
+]
+
+[project.urls]
+Repository = "https://github.com/Mt-Youya/vibe-knowledge-film"
+Upstream = "https://github.com/HeyChengC/vibe-knowledge-film"
+
+# 脚本按路径运行（见 SKILL.md），不作为包导入；安装只为拉取依赖，不把任何文件拷进 site-packages。
+[tool.hatch.build.targets.wheel]
+bypass-selection = true

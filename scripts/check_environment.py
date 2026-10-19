@@ -49,7 +49,7 @@ def main():
         print("\n需要处理：")
         for issue in issues:
             print(f"- {issue}")
-        print(f'\nPython 包: "{sys.executable}" -m pip install -r "{ROOT / "requirements.txt"}"')
+        print(f'\nPython 包: "{sys.executable}" -m pip install "{ROOT}"')
         print(f'浏览器: "{sys.executable}" -m playwright install chromium')
         print(f'字体: "{sys.executable}" "{ROOT / "engine/get_fonts.py"}"')
         return 1

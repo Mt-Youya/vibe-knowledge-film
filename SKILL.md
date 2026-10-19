@@ -10,7 +10,7 @@ description: >-
 license: MIT (reference-film materials excluded; see LICENSE)
 compatibility: >-
   Writing scripts and storyboards needs no setup. Rendering needs Python 3.10+, the pip
-  packages in requirements.txt, Playwright Chromium (or local Chrome), ffmpeg/ffprobe,
+  packages listed in pyproject.toml, Playwright Chromium (or local Chrome), ffmpeg/ffprobe,
   and fonts fetched by engine/get_fonts.py; first setup requires network access.
 metadata:
   author: Mt-Youya

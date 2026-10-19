@@ -11,7 +11,7 @@ skill 的安装和视频渲染环境是两件事。只写文案、事实表或�
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-python3 -m pip install -r "$SKILL_ROOT/requirements.txt"
+python3 -m pip install "$SKILL_ROOT"
 python3 -m playwright install chromium
 python3 "$SKILL_ROOT/engine/get_fonts.py"
 python3 "$SKILL_ROOT/scripts/check_environment.py"
@@ -37,7 +37,7 @@ python3 "$SKILL_ROOT/scripts/check_environment.py"
 
 | 现象 | 处理 |
 |---|---|
-| 找不到模块 | 用当前虚拟环境的 `python3 -m pip install -r ...` |
+| 找不到模块 | 用当前虚拟环境的 `python3 -m pip install "$SKILL_ROOT"` |
 | 找不到 Chromium / Chrome | `python3 -m playwright install chromium`，或设置有效的 `VK_BROWSER_CHANNEL` |
 | 字体报缺失 | 运行 `engine/get_fonts.py`，检查网络和 skill 目录的写权限 |
 | 找不到 ffmpeg | 安装 ffmpeg 并让当前进程的 PATH 能找到它 |

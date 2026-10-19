@@ -54,7 +54,7 @@ npx skills add ./vibe-knowledge-film --skill vibe-knowledge-film
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
-python3 -m pip install -r "$SKILL_ROOT/requirements.txt"
+python3 -m pip install "$SKILL_ROOT"
 python3 -m playwright install chromium
 python3 "$SKILL_ROOT/engine/get_fonts.py"
 python3 "$SKILL_ROOT/scripts/check_environment.py"
@@ -91,6 +91,7 @@ python3 "$SKILL_ROOT/engine/render.py" "$PROJECT" --serve
 |---|---|
 | `SKILL.md` | Agent 入口、触发描述与制作流程 |
 | `agents/openai.yaml` | Codex 展示信息和默认提示词 |
+| `pyproject.toml` | Python 版本与依赖声明 |
 | `references/` | 按需读取的讲解设计、文案、外观和 API |
 | `engine/` | 绘图、渲染、声音和字体下载 |
 | `scripts/` | 初始化、环境检查、端到端渲染验证 |
